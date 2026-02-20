@@ -1,3 +1,8 @@
+---
+name: write-episode
+description: マルチエージェントチームで異世界ファンタジーWeb小説のエピソードを自動執筆する。引数にエピソード番号を指定（例: /write-episode 1）
+---
+
 # /write-episode — 異世界ファンタジー自動執筆スキル
 
 ## 概要
@@ -12,7 +17,7 @@
 
 以下の全ステップを**自動的に**順次実行してください。各ステップの実行にはTask toolのsubagentを使います。
 
----
+***
 
 ### Step 0: 初期化
 
@@ -24,7 +29,7 @@
 3. 前話のエピソード（episodes/ 内）が存在するか確認
 4. revision_count = 0 として初期化
 
----
+***
 
 ### Step 1: 編集エージェント（方針策定）
 
@@ -49,7 +54,7 @@ agents/editor.md の指示に従い、第{番号}話の創作方針を策定し�
 
 完了後、`workspace/current-direction.md` が生成されたことを確認。
 
----
+***
 
 ### Step 2: 作者エージェント（執筆 / 改稿）
 
@@ -82,24 +87,22 @@ agents/author.md の指示に従い、第{番号}話を執筆してください�
 - agents/author.md（あなたの役割定義）
 - workspace/current-direction.md（編集の方針）
 - workspace/current-draft.txt（前回のドラフト）
-- workspace/manager-review.md（担当者レビュー — 最優先で反映）
-- workspace/reader-feedback-young-male.md
-- workspace/reader-feedback-adult-female.md
-- workspace/reader-feedback-veteran.md
+- workspace/consolidated-feedback.md（編集が統合したフィードバック — これが改稿の主要な指針です）
 - workspace/revision-log.md
 - story/premise.md
 - story/setting.md
 - story/characters.md
 - story/writing-guide.md
 
-担当者レビューの指摘を最優先に、読者フィードバックも参考にして改稿してください。
+workspace/consolidated-feedback.md の指示に従って改稿してください。
+このファイルに担当者レビューと読者フィードバックが統合されています。
 結果を workspace/current-draft.txt に上書きしてください。
 本文のみを出力し、メタ情報やコメントは含めないでください。
 ```
 
 完了後、`workspace/current-draft.txt` が生成されたことを確認。
 
----
+***
 
 ### Step 3: 担当者エージェント（レビュー）
 
@@ -126,7 +129,7 @@ agents/manager.md の指示に従い、ドラフトを評価してください�
 
 完了後、`workspace/manager-review.md` を読んで判定（OK / REVISION_NEEDED / MAJOR_REVISION）を取得。
 
----
+***
 
 ### Step 4: 読者エージェント×3（並列フィードバック）
 
@@ -171,7 +174,7 @@ reader-veteran.md の指示に従い、タツヤとしてフィードバック�
 結果を workspace/reader-feedback-veteran.md に書き出してください。
 ```
 
----
+***
 
 ### Step 5: 判定
 
@@ -193,11 +196,43 @@ reader-veteran.md の指示に従い、タツヤとしてフィードバック�
      - 主な指摘: {要約}
      ```
    - 現在のドラフトを `archive/episode-{番号}/draft-v{回数}.txt` にバックアップ
-   - **Step 2 に戻る**
+   - **Step 5.5 へ進む**
 
-5. 判定結果とステータスをユーザーに表示する
+5. FORCE_PASS の場合（revision_count ≥ max_revisions）:
+   - Step 5.5 は**スキップ**し、直接 Step 6 へ進む
 
----
+6. 判定結果とステータスをユーザーに表示する
+
+***
+
+### Step 5.5: 編集エージェント（フィードバック統合）【REVISION時のみ】
+
+Step 5 で REVISION_NEEDED と判定された場合にのみ実行する。PASS / FORCE_PASS 時はスキップ。
+
+Task toolで `subagent_type: "general-purpose"` のエージェントを起動し、以下を指示:
+
+```
+あなたは異世界ファンタジーWeb小説の編集者です。リビジョンに向けたフィードバック統合を行います。
+
+以下のファイルをすべて読み込んでください:
+- agents/editor.md（あなたの役割定義 — 特に「リビジョン時の対応」セクション）
+- workspace/manager-review.md（担当者レビュー）
+- workspace/reader-feedback-young-male.md（ユウキのフィードバック）
+- workspace/reader-feedback-adult-female.md（サキのフィードバック）
+- workspace/reader-feedback-veteran.md（タツヤのフィードバック）
+- workspace/current-direction.md（現在の創作方針）
+- workspace/current-draft.txt（現在のドラフト）
+
+agents/editor.md の「リビジョン時の対応」セクションの指示に従い、フィードバックを統合してください。
+第{番号}話、リビジョン{revision_count}回目です。
+
+結果を workspace/consolidated-feedback.md に書き出してください。
+方針の修正が必要な場合は workspace/current-direction.md も更新してください。
+```
+
+完了後、`workspace/consolidated-feedback.md` が生成されたことを確認し、**Step 2 に戻る**（改稿）。
+
+***
 
 ### Step 6: 確定・保存
 
@@ -207,7 +242,7 @@ reader-veteran.md の指示に従い、タツヤとしてフィードバック�
 4. workspace/ の全ファイルを `archive/episode-{番号:2桁}/` にコピー
 5. workspace/ をクリーン
 
----
+***
 
 ### 完了報告
 

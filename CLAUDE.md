@@ -34,6 +34,7 @@ Agentic_Novel/
 │   ├── reader-feedback-young-male.md
 │   ├── reader-feedback-adult-female.md
 │   ├── reader-feedback-veteran.md
+│   ├── consolidated-feedback.md      # 編集が統合したフィードバック（リビジョン時）
 │   └── revision-log.md               # リビジョン履歴
 └── archive/                           # 過去ドラフト保存
     └── episode-XX/
@@ -54,10 +55,11 @@ Agentic_Novel/
 
 1. **初期化**: workspace をクリーン
 2. **編集（方針策定）**: current-direction.md を出力
-3. **作者（執筆）**: current-draft.txt を出力
+3. **作者（執筆/改稿）**: current-draft.txt を出力
 4. **担当者（レビュー）**: manager-review.md を出力
 5. **読者×3（並列フィードバック）**: reader-feedback-*.md を出力
-6. **判定**: OK かつ 読者平均★≥3.5 → 確定 / 要修正 → Step 3 に戻る（最大3回）
+6. **判定**: OK かつ 読者平均★≥3.5 → 確定 / 要修正 → Step 6.5 へ（最大3回）
+   - **6.5 編集（フィードバック統合）**: consolidated-feedback.md を出力 → Step 3 に戻る
 7. **確定・保存**: episodes/ に保存、episode-summaries.md に追記、archive/ にアーカイブ
 
 ## ルール

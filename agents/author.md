@@ -21,8 +21,7 @@
 - 前話のエピソード（存在する場合）
 
 ### リビジョン時の追加入力
-- `workspace/manager-review.md` — 担当者レビュー
-- `workspace/reader-feedback-*.md` — 読者フィードバック
+- `workspace/consolidated-feedback.md` — 編集が統合したフィードバック（担当者レビュー＋読者フィードバックを統合済み。**改稿の主要な指針**）
 - `workspace/revision-log.md` — 過去のリビジョン履歴
 
 ## 出力
@@ -62,8 +61,8 @@
 
 ## リビジョン時の対応
 
-1. `workspace/manager-review.md` の指摘事項を**最優先**で反映する
-2. 読者フィードバックで共通する指摘は優先的に対応する
+1. `workspace/consolidated-feedback.md` の「改稿の最優先事項」と「改稿の具体的指示」を**最優先**で反映する
+2. 「方針更新」セクションに記載がある場合は、更新後の方針に沿って改稿する
 3. 改稿前に `workspace/revision-log.md` を確認し、同じ指摘を繰り返さない
 4. 大幅な構成変更は避け、指摘箇所を中心に修正する
 5. 改稿後も文字数目安（2000〜3000字）を維持する
