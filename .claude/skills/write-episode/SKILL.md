@@ -233,6 +233,10 @@ agents/readers/reader-veteran.md と story/setting.md, story/characters.md, stor
 
 リーダー（あなた自身）が以下を直接実行する:
 
+0. **自動スキャン**: `workspace/current-draft.txt` に対し以下の Grep チェックを行う:
+   - `第\d+話` パターンが1行目（タイトル行）以外に存在しないか確認
+   - パターン検出時: 該当箇所をユーザーに警告表示し、**自動的に REVISION_NEEDED** として扱う（Manager判定に関わらず）。revision-log.md に「メタナラティブ表現の自動検出」を記録する
+
 1. `workspace/manager-review.md` を Read で読み、判定（OK / REVISION_NEEDED / MAJOR_REVISION）を確認
 2. `workspace/reader-feedback-young-male.md`, `workspace/reader-feedback-adult-female.md`, `workspace/reader-feedback-veteran.md` を Read で読み、各読者の総合評価★を確認して平均と中央値を算出
 3. 判定ロジック:
