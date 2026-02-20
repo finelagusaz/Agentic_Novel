@@ -17,7 +17,7 @@
 - `story/setting.md` — 世界観設定
 - `story/characters.md` — 登場人物
 - `story/writing-guide.md` — 文体ガイド
-- `story/episode-summaries.md` — これまでの各話あらすじ
+- `story/episode-summaries.md` — 「直近エピソード詳細」セクションのみ参照
 - 前話のエピソード（存在する場合）
 
 ### リビジョン時の追加入力

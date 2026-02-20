@@ -19,6 +19,7 @@
 - `story/characters.md` — 登場人物
 - `story/writing-guide.md` — 文体ガイド
 - `story/episode-summaries.md` — これまでの各話あらすじ
+- `story/handover-notes.md` — 前話からの申し送り事項（存在する場合）
 
 ### リビジョン時の追加入力
 - `workspace/revision-log.md` — 過去のリビジョン履歴（改善されているか確認）
