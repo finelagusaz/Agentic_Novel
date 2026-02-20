@@ -35,6 +35,23 @@ description: マルチエージェントチームで異世界ファンタジーW
 
 ***
 
+### 共通手順: エージェント出力の検証
+
+各ステップでエージェントの完了報告（idle通知）を受けた後、以下の手順で出力を検証する:
+
+1. Glob ツールで期待されるファイルパスを検索する
+2. ファイルが存在する場合、Read ツールで内容を確認し、実質的な内容があるか（空ファイルや数行のテンプレートのみでないか）を検証する
+3. 検証成功 → 次のステップへ進む
+4. 検証失敗（ファイルが存在しない、または内容が不十分）の場合:
+   a. リトライ回数が 2 未満なら、SendMessage で当該エージェントに再指示を送る:
+      「{期待ファイル} が確認できません。ファイルを生成して報告してください。」
+   b. 再度完了報告を待ち、検証を繰り返す
+   c. リトライ回数が 2 に達した場合 → ユーザーにエラーを報告し、ワークフローを中断する
+
+※ Step 5 の並列読者エージェントでは、失敗したエージェントのみリトライする（成功したエージェントは再実行しない）
+
+***
+
 ### Step 1: チーム作成
 
 TeamCreate で `"novel-ep{番号}"` という名前のチームを作成する。
@@ -75,7 +92,7 @@ agents/editor.md の指示に従い、結果を workspace/current-direction.md �
 完了したら報告してください。
 ```
 
-editor からの完了報告（idle通知）を待ち、`workspace/current-direction.md` が生成されたことを Glob で確認する。ファイルが存在しない場合はユーザーにエラーを報告し、ワークフローを中断する。
+editor からの完了報告（idle通知）を待ち、`workspace/current-direction.md` について**共通手順: エージェント出力の検証**に従う。
 
 ***
 
@@ -119,7 +136,7 @@ workspace/consolidated-feedback.md の指示に従って改稿してください
 完了したら報告してください。
 ```
 
-author からの完了報告を待ち、`workspace/current-draft.txt` が生成されたことを Glob で確認する。ファイルが存在しない場合はユーザーにエラーを報告し、ワークフローを中断する。
+author からの完了報告を待ち、`workspace/current-draft.txt` について**共通手順: エージェント出力の検証**に従う。
 
 ***
 
@@ -164,7 +181,7 @@ agents/manager.md の指示に従い、改稿版を評価してください。
 完了したら報告してください。
 ```
 
-manager からの完了報告を待ち、`workspace/manager-review.md` が生成されたことを Glob で確認する。ファイルが存在しない場合はユーザーにエラーを報告し、ワークフローを中断する。
+manager からの完了報告を待ち、`workspace/manager-review.md` について**共通手順: エージェント出力の検証**に従う。
 
 ***
 
@@ -225,7 +242,13 @@ agents/readers/reader-veteran.md と story/setting.md, story/characters.md, stor
 完了したら報告してください。
 ```
 
-3名全員からの完了報告を待ち、`workspace/reader-feedback-young-male.md`, `workspace/reader-feedback-adult-female.md`, `workspace/reader-feedback-veteran.md` が生成されたことを Glob で確認する。いずれかのファイルが存在しない場合はユーザーにエラーを報告し、ワークフローを中断する。
+3名全員からの完了報告を待ち、以下の3ファイルを個別に検証する:
+- `workspace/reader-feedback-young-male.md`
+- `workspace/reader-feedback-adult-female.md`
+- `workspace/reader-feedback-veteran.md`
+
+各ファイルについて**共通手順: エージェント出力の検証**に従う。
+失敗したエージェントのみリトライし、成功したエージェントには再指示を送らない。
 
 ***
 
@@ -294,7 +317,7 @@ agents/editor.md の「リビジョン時の対応」セクションの指示に
 完了したら報告してください。
 ```
 
-editor からの完了報告を待ち、`workspace/consolidated-feedback.md` が生成されたことを Glob で確認する。ファイルが存在しない場合はユーザーにエラーを報告し、ワークフローを中断する。**Step 3 に戻る**（改稿）。
+editor からの完了報告を待ち、`workspace/consolidated-feedback.md` について**共通手順: エージェント出力の検証**に従う。**Step 3 に戻る**（改稿）。
 
 ***
 
