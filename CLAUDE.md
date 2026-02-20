@@ -37,7 +37,8 @@ Agentic_Novel/
 │   ├── reader-feedback-adult-female.md
 │   ├── reader-feedback-veteran.md
 │   ├── consolidated-feedback.md      # 編集が統合したフィードバック（リビジョン時）
-│   └── revision-log.md               # リビジョン履歴
+│   ├── revision-log.md               # リビジョン履歴
+│   └── progress.md                    # 進捗トラッカー（実行中のみ存在）
 └── archive/                           # 過去ドラフト保存
     └── episode-XX/
 ```
@@ -55,7 +56,7 @@ Agentic_Novel/
 
 `/write-episode <番号>` で起動。全ステップ自動実行。
 
-1. **初期化**: workspace をクリーン
+1. **初期化 / 再開判定**: progress.md をチェック。新規なら workspace をクリーン、再開なら中断地点から継続
 2. **編集（方針策定）**: current-direction.md を出力
 3. **作者（執筆/改稿）**: current-draft.txt を出力
 4. **担当者（レビュー）**: manager-review.md を出力
@@ -72,3 +73,14 @@ Agentic_Novel/
 - リビジョンは最大3回（`--max-revisions=N` で変更可能）
 - エピソードの文字数目安: 2000〜3000字
 - 読者フィードバックは並列実行で効率化する
+
+## 中断復帰（レジュメ）
+
+セッション中断（レート制限、クラッシュ等）に対する復帰機能:
+
+- `/write-episode N` 実行中、進捗は `workspace/progress.md` に逐次記録される
+- セッション中断後に同じ `/write-episode N` を実行すると、自動的に中断地点から再開する
+- エピソード番号が異なる progress.md が残っている場合はユーザーに確認を求める
+- エピソード確定時（Step 7）に progress.md はアーカイブ後に自動削除される
+- チームはセッション間で維持されないため、再開時も Step 1（チーム作成）は必ず実行される
+- 手動で `workspace/progress.md` を削除すると強制的に新規開始できる
