@@ -33,36 +33,36 @@ description: マルチエージェントチームで異世界ファンタジーW
 
 ***
 
-### Step 1: チーム作成・チームメイトスポーン
+### Step 1: チーム作成
 
 TeamCreate で `"novel-ep{番号}"` という名前のチームを作成する。
 
-次に、以下の **6名のチームメイト** をTask toolでスポーンする。
-各チームメイトには `.claude/agents/` に定義されたカスタムエージェントを使い、`team_name` を指定する。
+チームメイトは以下の6名だが、**必要になった時点で段階的にスポーン**する（遅延スポーン方式）。
+一斉にスポーンしないこと。各ステップの冒頭でスポーンし、即座に作業指示を送る。
 
-| チームメイト | subagent_type | name | 備考 |
-|------------|---------------|------|------|
-| 編集 | novel-editor | editor | 方針策定 + フィードバック統合 |
-| 作者 | novel-author | author | 初稿執筆 + 改稿 |
-| 担当者 | novel-manager | manager | 品質レビュー |
-| ユウキ | novel-reader-ym | reader-ym | 読者フィードバック |
-| サキ | novel-reader-af | reader-af | 読者フィードバック |
-| タツヤ | novel-reader-vet | reader-vet | 読者フィードバック |
+| チームメイト | subagent_type | name | スポーンタイミング |
+|------------|---------------|------|------------------|
+| 編集 | novel-editor | editor | Step 2 開始時 |
+| 作者 | novel-author | author | Step 3 開始時 |
+| 担当者 | novel-manager | manager | Step 4 開始時 |
+| ユウキ | novel-reader-ym | reader-ym | Step 5 開始時 |
+| サキ | novel-reader-af | reader-af | Step 5 開始時 |
+| タツヤ | novel-reader-vet | reader-vet | Step 5 開始時 |
 
 各チームメイトのスポーン時プロンプトは以下のようにする:
 
 ```
-あなたはエージェントチームの一員です。リーダーからの指示を待ってください。
+あなたはエージェントチームの一員です。
+【重要】リーダーから具体的な作業指示が届くまで、workspace/ のファイルを読んだり作業を開始しないでください。
 指示が届いたら、まず自分のエージェント定義ファイルを読み、その役割に従って作業してください。
 作業が完了したら、結果を workspace/ に書き出し、リーダーに完了を報告してください。
 ```
-
-全6名のスポーン完了を確認する。
 
 ***
 
 ### Step 2: 編集（方針策定）
 
+**editor をスポーン**（まだスポーンしていない場合）し、即座に以下を指示する。
 SendMessage で **editor** に以下を指示:
 
 ```
@@ -84,6 +84,8 @@ editor からの完了報告（idle通知）を待ち、`workspace/current-direc
 ***
 
 ### Step 3: 作者（執筆 / 改稿）
+
+**author をスポーン**（まだスポーンしていない場合）し、即座に以下を指示する。
 
 **初稿の場合** — SendMessage で **author** に以下を指示:
 
@@ -127,6 +129,7 @@ author からの完了報告を待ち、`workspace/current-draft.txt` が生成�
 
 ### Step 4: 担当者（レビュー）
 
+**manager をスポーン**（まだスポーンしていない場合）し、即座に以下を指示する。
 SendMessage で **manager** に以下を指示:
 
 ```
@@ -152,6 +155,7 @@ manager からの完了報告を待つ。
 
 ### Step 5: 読者×3（並列フィードバック）
 
+**reader-ym, reader-af, reader-vet を同時にスポーン**（まだスポーンしていない場合）し、スポーン完了後に即座に以下を指示する。
 以下の **3名に同時に** SendMessage を送る（並列実行）:
 
 **reader-ym** に:
