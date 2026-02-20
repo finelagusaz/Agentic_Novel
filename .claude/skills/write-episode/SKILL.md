@@ -73,6 +73,7 @@ SendMessage で **editor** に以下を指示:
 - story/premise.md, story/setting.md, story/characters.md
 - story/plot-outline.md, story/writing-guide.md
 - story/episode-summaries.md
+- story/handover-notes.md（前話からの申し送り事項。存在する場合）
 - 前話のエピソード（あれば episodes/ から最新のもの）
 
 agents/editor.md の指示に従い、結果を workspace/current-direction.md に書き出してください。
@@ -254,6 +255,7 @@ editor からの完了報告を待ち、`workspace/consolidated-feedback.md` が
 1. エピソードタイトルを `workspace/current-direction.md` から取得
 2. `workspace/current-draft.txt` を `episodes/{番号:2桁}_{タイトル}.txt` にコピー
 3. `story/episode-summaries.md` にあらすじを追記（100〜150字）
+3.5. `workspace/manager-review.md` と `workspace/reader-feedback-young-male.md`, `workspace/reader-feedback-adult-female.md`, `workspace/reader-feedback-veteran.md` を参照し、次話への申し送り事項を `story/handover-notes.md` に上書き保存（設定矛盾・未回収伏線・読者要望を整理）
 4. workspace/ の全ファイルを `archive/episode-{番号:2桁}/` にコピー
 5. workspace/ をクリーン
 

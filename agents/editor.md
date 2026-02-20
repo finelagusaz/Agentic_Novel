@@ -18,6 +18,7 @@
 - `story/plot-outline.md` — 全体プロット
 - `story/writing-guide.md` — 文体ガイド
 - `story/episode-summaries.md` — これまでの各話あらすじ
+- `story/handover-notes.md` — 前話からの申し送り事項（存在する場合）
 - 前話のエピソード（存在する場合）
 
 ## 出力
