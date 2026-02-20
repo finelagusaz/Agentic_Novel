@@ -28,9 +28,10 @@ description: マルチエージェントチームで異世界ファンタジーW
    ```
    # リビジョン履歴 — 第{番号}話
    ```
-3. 前話のエピソード（episodes/ 内）が存在するか確認
-4. revision_count = 0 として初期化
-5. `story/handover-notes.md` を読み込み、`[DEFERRED:ep{今回の番号}]` のタグが付いた項目を `[ACTIVE]` に昇格する（該当項目がなければスキップ）
+3. `mkdir -p archive/episode-{番号:2桁}` でアーカイブディレクトリを事前作成する
+4. 前話のエピソード（episodes/ 内）が存在するか確認
+5. revision_count = 0 として初期化
+6. `story/handover-notes.md` を読み込み、`[DEFERRED:ep{今回の番号}]` のタグが付いた項目を `[ACTIVE]` に昇格する（該当項目がなければスキップ）
 
 ***
 
@@ -74,7 +75,7 @@ agents/editor.md の指示に従い、結果を workspace/current-direction.md �
 完了したら報告してください。
 ```
 
-editor からの完了報告（idle通知）を待ち、`workspace/current-direction.md` が生成されたことを確認。
+editor からの完了報告（idle通知）を待ち、`workspace/current-direction.md` が生成されたことを Glob で確認する。ファイルが存在しない場合はユーザーにエラーを報告し、ワークフローを中断する。
 
 ***
 
@@ -118,13 +119,13 @@ workspace/consolidated-feedback.md の指示に従って改稿してください
 完了したら報告してください。
 ```
 
-author からの完了報告を待ち、`workspace/current-draft.txt` が生成されたことを確認。
+author からの完了報告を待ち、`workspace/current-draft.txt` が生成されたことを Glob で確認する。ファイルが存在しない場合はユーザーにエラーを報告し、ワークフローを中断する。
 
 ***
 
 ### Step 4: 担当者（レビュー）
 
-**manager をスポーン**する。Task ツールの prompt に以下の作業指示を直接含める:
+**初稿の場合（revision_count == 0）** — **manager をスポーン**する。Task ツールの prompt に以下の作業指示を直接含める:
 
 ```
 ドラフトを評価してください。
@@ -144,13 +145,32 @@ agents/manager.md の指示に従い、ドラフトを評価してください�
 完了したら報告してください。
 ```
 
-manager からの完了報告を待つ。
+**リビジョンの場合（revision_count > 0）** — SendMessage で **manager** に以下を指示:
+
+```
+改稿版のドラフトを再評価してください。
+
+以下のファイルを読み込んでください:
+- agents/manager.md（あなたの役割定義）
+- workspace/current-direction.md（編集の方針）
+- workspace/current-draft.txt（改稿されたドラフト）
+- workspace/revision-log.md（リビジョン履歴）
+- workspace/consolidated-feedback.md（前回のフィードバック統合）
+
+agents/manager.md の指示に従い、改稿版を評価してください。
+前回のリビジョン記録と比較し、改善が見られるかも確認してください。
+現在のリビジョン回数は {revision_count} / {max_revisions} です。
+結果を workspace/manager-review.md に上書きしてください。
+完了したら報告してください。
+```
+
+manager からの完了報告を待ち、`workspace/manager-review.md` が生成されたことを Glob で確認する。ファイルが存在しない場合はユーザーにエラーを報告し、ワークフローを中断する。
 
 ***
 
 ### Step 5: 読者×3（並列フィードバック）
 
-**reader-ym, reader-af, reader-vet を同時にスポーン**する。各 Task ツールの prompt に以下の作業指示を直接含める（3名並列でスポーン）:
+**初稿の場合（revision_count == 0）** — **reader-ym, reader-af, reader-vet を同時にスポーン**する。各 Task ツールの prompt に以下の作業指示を直接含める（3名並列でスポーン）:
 
 **reader-ym** に:
 ```
@@ -176,7 +196,36 @@ agents/readers/reader-veteran.md と story/setting.md, story/characters.md, stor
 完了したら報告してください。
 ```
 
-3名全員からの完了報告を待つ。
+**リビジョンの場合（revision_count > 0）** — SendMessage で **reader-ym, reader-af, reader-vet** に並列で以下を指示:
+
+**reader-ym** に:
+```
+リビジョン{revision_count}回目の改稿版です。
+workspace/current-draft.txt を読んで、ユウキとしてフィードバックを書いてください。
+agents/readers/reader-young-male.md の指示に従い、
+結果を workspace/reader-feedback-young-male.md に上書きしてください。
+完了したら報告してください。
+```
+
+**reader-af** に:
+```
+リビジョン{revision_count}回目の改稿版です。
+workspace/current-draft.txt を読んで、サキとしてフィードバックを書いてください。
+agents/readers/reader-adult-female.md の指示に従い、
+結果を workspace/reader-feedback-adult-female.md に上書きしてください。
+完了したら報告してください。
+```
+
+**reader-vet** に:
+```
+リビジョン{revision_count}回目の改稿版です。
+workspace/current-draft.txt を読んで、タツヤとしてフィードバックを書いてください。
+agents/readers/reader-veteran.md と story/setting.md, story/characters.md, story/episode-summaries.md（アーク要約＋直近エピソード詳細の両方）も参照し、
+結果を workspace/reader-feedback-veteran.md に上書きしてください。
+完了したら報告してください。
+```
+
+3名全員からの完了報告を待ち、`workspace/reader-feedback-young-male.md`, `workspace/reader-feedback-adult-female.md`, `workspace/reader-feedback-veteran.md` が生成されたことを Glob で確認する。いずれかのファイルが存在しない場合はユーザーにエラーを報告し、ワークフローを中断する。
 
 ***
 
@@ -185,7 +234,7 @@ agents/readers/reader-veteran.md と story/setting.md, story/characters.md, stor
 リーダー（あなた自身）が以下を直接実行する:
 
 1. `workspace/manager-review.md` を Read で読み、判定（OK / REVISION_NEEDED / MAJOR_REVISION）を確認
-2. `workspace/reader-feedback-young-male.md`, `workspace/reader-feedback-adult-female.md`, `workspace/reader-feedback-veteran.md` を Read で読み、各読者の総合評価★を確認して平均を算出
+2. `workspace/reader-feedback-young-male.md`, `workspace/reader-feedback-adult-female.md`, `workspace/reader-feedback-veteran.md` を Read で読み、各読者の総合評価★を確認して平均と中央値を算出
 3. 判定ロジック:
    - **revision_count ≥ max_revisions** → **FORCE_PASS**（Step 7へ、警告付き）
    - **Manager判定が OK** かつ **読者平均★ ≥ 3.5** → **PASS**（Step 7へ）
@@ -198,9 +247,12 @@ agents/readers/reader-veteran.md と story/setting.md, story/characters.md, stor
      ```
      ## リビジョン {回数}
      - Manager判定: {判定}
-     - 読者平均★: {平均}
+     - 深刻度: {通常改稿 / 重大改稿}
+     - 読者評価: ユウキ★{N} / サキ★{N} / タツヤ★{N}
+     - 読者平均★: {平均} / 中央値★: {中央値}
      - 主な指摘: {要約}
      ```
+     深刻度判定ルール: Manager判定が MAJOR_REVISION → 重大改稿、それ以外 → 通常改稿
    - 現在のドラフトを `archive/episode-{番号:2桁}/draft-v{回数}.txt` にバックアップ
    - **Step 6.5 へ進む**
 
@@ -231,13 +283,14 @@ SendMessage で **editor** に以下を指示:
 
 agents/editor.md の「リビジョン時の対応」セクションの指示に従い、フィードバックを統合してください。
 第{番号}話、リビジョン{revision_count}回目です。
+深刻度は「{通常改稿 / 重大改稿}」です。重大改稿の場合は根本的な構成・設定の問題を最優先で対処してください。
 
 結果を workspace/consolidated-feedback.md に書き出してください。
 方針の修正が必要な場合は workspace/current-direction.md も更新してください。
 完了したら報告してください。
 ```
 
-editor からの完了報告を待ち、`workspace/consolidated-feedback.md` が生成されたことを確認し、**Step 3 に戻る**（改稿）。
+editor からの完了報告を待ち、`workspace/consolidated-feedback.md` が生成されたことを Glob で確認する。ファイルが存在しない場合はユーザーにエラーを報告し、ワークフローを中断する。**Step 3 に戻る**（改稿）。
 
 ***
 
@@ -258,22 +311,38 @@ editor からの完了報告を待ち、`workspace/consolidated-feedback.md` が
       - 【主な伏線】にアーク内で張られた重要伏線を列挙する
       - 圧縮後、該当話の詳細あらすじを「直近エピソード詳細」から削除する
       - 第二幕（第6〜13話）は長いため、自然な区切りでサブアーク（例: 第6〜9話 / 第10〜13話）に分割してよい
-3.5. `story/handover-notes.md` のライフサイクル管理を行う:
-   a. 現在の `story/handover-notes.md` を読み込む
-   b. 今話で解決された項目を特定する:
-      - `workspace/current-draft.txt`（確定ドラフト）を読み、`[ACTIVE]` 項目のうち今話の本文で対処されたものを `[RESOLVED]` に変更する
-   c. `[RESOLVED]` タグの付いた項目を削除する
-   d. 新たな申し送り事項を追加する:
-      - `workspace/manager-review.md` の「要修正箇所」「良かった点」から抽出
-      - `workspace/reader-feedback-young-male.md`, `workspace/reader-feedback-adult-female.md`, `workspace/reader-feedback-veteran.md` から共通指摘・個別要望を抽出
-      - 各項目に適切なタグ（`[ACTIVE]` or `[DEFERRED:epN]`）を付与する
-   e. セクション内の項目数チェック:
-      - 上限: 設定整合性5件 / 未回収伏線7件 / 表現・演出5件 / キャラクター描写5件 / 読者要望5件 / 継続的な指針5件
-      - いずれかのセクションが上限を超えた場合、優先度の低い `[ACTIVE]` 項目を `[DEFERRED:epN]` に降格して上限内に収める
-   f. 反復する指摘は `[RECURRING]` に昇格して「継続的な指針」セクションへ移動する
-   g. 更新後の `story/handover-notes.md` を上書き保存する（見出しの話番号も更新する）
-4. workspace/ の全ファイルを `archive/episode-{番号:2桁}/` にコピー
-5. workspace/ をクリーン
+4. `story/quality-log.md` に品質記録を追記する
+   （ファイルが存在しない場合はヘッダー付きで新規作成）
+
+→ **Step 7.5 を実行**（editor に申し送り事項更新を委任）
+
+5. workspace/ の全ファイルを `archive/episode-{番号:2桁}/` にコピー
+6. workspace/ をクリーン
+
+***
+
+### Step 7.5: 編集（申し送り事項更新）
+
+SendMessage で **editor** に以下を指示:
+
+```
+第{番号}話の確定を受けて、申し送り事項を更新してください。
+
+以下のファイルを読み込んでください:
+- agents/editor.md（「申し送り事項の管理」セクション）
+- episodes/{番号:2桁}_{タイトル}.txt（確定した本文）
+- workspace/manager-review.md
+- workspace/reader-feedback-young-male.md
+- workspace/reader-feedback-adult-female.md
+- workspace/reader-feedback-veteran.md
+- story/handover-notes.md
+
+story/handover-notes.md を更新してください。
+見出しの話番号を「第{番号+1}話より」に更新してください。
+完了したら報告してください。
+```
+
+editor からの完了報告を待つ。
 
 ***
 

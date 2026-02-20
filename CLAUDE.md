@@ -26,7 +26,8 @@ Agentic_Novel/
 │   ├── plot-outline.md                # 全体プロット
 │   ├── episode-summaries.md           # 各話あらすじ蓄積
 │   ├── writing-guide.md              # 文体・記法ガイド
-│   └── handover-notes.md             # 次話への申し送り事項
+│   ├── handover-notes.md             # 次話への申し送り事項
+│   └── quality-log.md                # 品質トレンド記録
 ├── episodes/                          # 確定エピソード（.txt）
 ├── workspace/                         # エージェント間の作業領域
 │   ├── current-direction.md           # 編集の方針
