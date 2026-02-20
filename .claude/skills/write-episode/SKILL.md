@@ -209,6 +209,7 @@ agents/readers/reader-adult-female.md の指示に従い、
 ```
 workspace/current-draft.txt を読んで、タツヤとしてフィードバックを書いてください。
 agents/readers/reader-veteran.md と story/setting.md, story/characters.md, story/episode-summaries.md（アーク要約＋直近エピソード詳細の両方）も参照し、
+さらに story/handover-notes.md と workspace/current-direction.md も参照してください（設定整合性チェック時に、既知の計画済み要素を誤検出しないため）。
 結果を workspace/reader-feedback-veteran.md に書き出してください。
 完了したら報告してください。
 ```
@@ -238,6 +239,7 @@ agents/readers/reader-adult-female.md の指示に従い、
 リビジョン{revision_count}回目の改稿版です。
 workspace/current-draft.txt を読んで、タツヤとしてフィードバックを書いてください。
 agents/readers/reader-veteran.md と story/setting.md, story/characters.md, story/episode-summaries.md（アーク要約＋直近エピソード詳細の両方）も参照し、
+さらに story/handover-notes.md と workspace/current-direction.md も参照してください（設定整合性チェック時に、既知の計画済み要素を誤検出しないため）。
 結果を workspace/reader-feedback-veteran.md に上書きしてください。
 完了したら報告してください。
 ```
@@ -307,6 +309,7 @@ SendMessage で **editor** に以下を指示:
 - workspace/reader-feedback-veteran.md（タツヤのフィードバック）
 - workspace/current-direction.md（現在の創作方針）
 - workspace/current-draft.txt（現在のドラフト）
+- story/handover-notes.md（申し送り事項 — 計画済み要素のフィルタリング用）
 
 agents/editor.md の「リビジョン時の対応」セクションの指示に従い、フィードバックを統合してください。
 第{番号}話、リビジョン{revision_count}回目です。
