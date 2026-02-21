@@ -12,7 +12,7 @@
 
 ![Genre](https://img.shields.io/badge/Genre-異世界ファンタジー-8B5CF6?style=for-the-badge&labelColor=1a1a2e)
 ![Status](https://img.shields.io/badge/Status-連載中_全20話予定-10B981?style=for-the-badge&labelColor=1a1a2e)
-![Episodes](https://img.shields.io/badge/Episodes-11%2F20-F59E0B?style=for-the-badge&labelColor=1a1a2e)
+![Episodes](https://img.shields.io/badge/Episodes-12%2F20-F59E0B?style=for-the-badge&labelColor=1a1a2e)
 ![Agents](https://img.shields.io/badge/Agents-4_Types-3B82F6?style=for-the-badge&labelColor=1a1a2e)
 ![Tech](https://img.shields.io/badge/Powered_by-Claude_Code-EC4899?style=for-the-badge&logo=anthropic&labelColor=1a1a2e)
 
@@ -47,31 +47,45 @@
 
 ```mermaid
 graph TB
-    subgraph "🎬 Write Episode Pipeline"
+    CMD["⚡ /write-episode &lt;N&gt;"]
+
+    CMD --> INIT["🔄 初期化"]
+    INIT --> TEAM["🤝 チーム作成<br><i>コアメンバー一斉スポーン</i>"]
+
+    subgraph CORE ["💬 コアチーム（SendMessage で議論）"]
         direction TB
-        CMD["⚡ /write-episode &lt;N&gt;"]
-        
-        CMD --> INIT["🔄 初期化<br><i>workspace をクリーン</i>"]
-        INIT --> ED["📋 編集エージェント<br><i>方針策定</i>"]
-        ED --> AU["✍️ 作者エージェント<br><i>本文執筆</i>"]
-        AU --> MG["📊 担当者エージェント<br><i>品質レビュー</i>"]
-        MG --> RD["👥 読者エージェント ×3<br><i>並列フィードバック</i>"]
-        
-        RD --> JG{{"🎯 判定<br>OK &amp; ★≥3.5?"}}
-        JG -- "✅ PASS" --> SAVE["💾 確定・保存"]
-        JG -- "❌ 要修正" --> FB["🔀 フィードバック統合"]
-        FB --> AU
+        ED["📋 編集<br><i>方針策定</i>"]
+        D2D{{"💬 方針<br>ディスカッション"}}
+        AU["✍️ 作者<br><i>本文執筆</i>"]
+        MG["📊 担当者<br><i>品質レビュー</i>"]
+        D4D{{"💬 レビュー<br>ディスカッション"}}
+
+        ED --> D2D
+        D2D --> AU
+        AU --> MG
+        MG --> D4D
     end
 
+    TEAM --> ED
+
+    D4D --> RD["👥 読者 ×3<br><i>サブエージェント並列</i>"]
+    RD --> JG{{"🎯 判定<br>OK &amp; ★≥3.5?"}}
+    JG -- "✅ PASS" --> SAVE["💾 確定・保存"]
+    JG -- "❌ 要修正" --> D65{{"💬 リビジョン<br>ディスカッション"}}
+    D65 --> AU
+
     style CMD fill:#8B5CF6,stroke:#6D28D9,color:#fff,stroke-width:2px
+    style TEAM fill:#6B7280,stroke:#4B5563,color:#fff
     style ED fill:#3B82F6,stroke:#2563EB,color:#fff
     style AU fill:#10B981,stroke:#059669,color:#fff
     style MG fill:#F59E0B,stroke:#D97706,color:#fff
     style RD fill:#EC4899,stroke:#DB2777,color:#fff
     style JG fill:#6366F1,stroke:#4F46E5,color:#fff
     style SAVE fill:#10B981,stroke:#059669,color:#fff
-    style FB fill:#EF4444,stroke:#DC2626,color:#fff
     style INIT fill:#6B7280,stroke:#4B5563,color:#fff
+    style D2D fill:#8B5CF6,stroke:#6D28D9,color:#fff
+    style D4D fill:#8B5CF6,stroke:#6D28D9,color:#fff
+    style D65 fill:#EF4444,stroke:#DC2626,color:#fff
 ```
 
 <br>
@@ -85,6 +99,8 @@ graph TB
 **📋 編集**
 <br>
 `agents/editor.md`
+<br>
+`チームメンバー`
 <br><br>
 全体プロットと設定を踏まえ
 <br>
@@ -96,6 +112,8 @@ graph TB
 **✍️ 作者**
 <br>
 `agents/author.md`
+<br>
+`チームメンバー`
 <br><br>
 編集の方針に従い
 <br>
@@ -107,6 +125,8 @@ graph TB
 **📊 担当者**
 <br>
 `agents/manager.md`
+<br>
+`チームメンバー`
 <br><br>
 ドラフトの**品質評価**と
 <br>
@@ -118,6 +138,8 @@ graph TB
 **👥 読者 ×3**
 <br>
 `agents/readers/`
+<br>
+`サブエージェント`
 <br><br>
 3ペルソナ視点で
 <br>
@@ -170,7 +192,7 @@ Agentic_Novel/
 │   ├── 01_灰色の目覚め.txt
 │   ├── 02_記憶という代償.txt
 │   ├── ...
-│   └── 11_選択の重み.txt
+│   └── 12_追手.txt
 │
 ├── 🔧 workspace/                    # エージェント間の作業領域
 │   ├── current-direction.md         #   編集の方針
@@ -178,7 +200,8 @@ Agentic_Novel/
 │   ├── manager-review.md            #   担当者レビュー
 │   ├── reader-feedback-*.md         #   読者フィードバック
 │   ├── consolidated-feedback.md     #   統合フィードバック
-│   └── revision-log.md             #   リビジョン履歴
+│   ├── revision-log.md             #   リビジョン履歴
+│   └── discussion-log.md           #   ディスカッション記録
 │
 └── 📦 archive/                      # 過去ドラフト保存
     └── episode-XX/
@@ -231,8 +254,8 @@ gantt
     忘却の王国の門          :done, ep9, 9, 10
     王の残響              :done, ep10, 10, 11
     選択の重み             :done, ep11, 11, 12
-    Episode 12            :active, ep12, 12, 13
-    Episode 13            :ep13, 13, 14
+    追手                  :done, ep12, 12, 13
+    Episode 13            :active, ep13, 13, 14
 
     section 第三幕 — 覚醒と決断
     Episode 14            :ep14, 14, 15
@@ -260,6 +283,7 @@ gantt
 - ✍️ **執筆に集中**（作者エージェント）
 - 📊 **客観的品質管理**（担当者エージェント）
 - 👥 **多角的評価**（読者エージェント）
+- 💬 **創発的議論**（チームディスカッション）
 
 を実現しています。
 
@@ -286,10 +310,12 @@ gantt
 ## 📜 ルール
 
 > [!IMPORTANT]
-> - エージェント間の通信はすべて `workspace/` 内のファイル経由で行う
+> - コアメンバー間の通信は **SendMessage** による直接メッセージで行う
+> - 成果物（方針・ドラフト・レビュー等）は `workspace/` 内のファイルとして出力する
+> - ディスカッションの知見は `workspace/discussion-log.md` に記録する
 > - 各エージェントは `agents/*.md` に定義された役割に忠実に従う
 > - `story/` 内のファイルは全エージェントが参照する共有設定
-> - 読者フィードバックは **並列実行** で効率化する
+> - 読者フィードバックは **サブエージェント並列実行** で効率化する
 
 <br>
 
