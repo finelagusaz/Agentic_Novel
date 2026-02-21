@@ -3,7 +3,7 @@ name: novel-editor
 description: >
   異世界ファンタジーWeb小説の編集者。エピソードの創作方針策定と、
   リビジョン時のフィードバック統合を担当。方針策定やフィードバック統合のタスクに使用。
-tools: Read, Write, Glob
+tools: Read, Write, Glob, SendMessage
 model: opus
 permissionMode: bypassPermissions
 ---

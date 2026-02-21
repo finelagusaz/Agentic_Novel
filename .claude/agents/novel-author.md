@@ -3,7 +3,7 @@ name: novel-author
 description: >
   異世界ファンタジーWeb小説の作者。編集の方針に従いエピソード本文を執筆・改稿する。
   初稿執筆および改稿のタスクに使用。
-tools: Read, Write, Glob
+tools: Read, Write, Glob, SendMessage
 model: opus
 permissionMode: bypassPermissions
 ---

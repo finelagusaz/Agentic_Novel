@@ -3,7 +3,7 @@ name: novel-manager
 description: >
   異世界ファンタジーWeb小説の担当編集者。ドラフトの品質評価と合否判定を行う。
   レビュー・判定タスクに使用。
-tools: Read, Write, Glob
+tools: Read, Write, Glob, SendMessage
 model: sonnet
 permissionMode: bypassPermissions
 ---
