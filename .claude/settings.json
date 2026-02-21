@@ -1,0 +1,18 @@
+{
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  },
+  "permissions": {
+    "allow": [
+      "Bash(perl:*)",
+      "Bash(chmod:*)",
+      "Bash(cp:*)",
+      "Bash(rm -f workspace/*)",
+      "Bash(mkdir:*)",
+      "Bash(ls:*)",
+      "Bash(grep:*)",
+      "WebSearch",
+      "Bash(git:*)"
+    ]
+  }
+}
