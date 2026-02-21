@@ -4,7 +4,7 @@
 episode: 14
 max_revisions: 3
 revision_count: 0
-current_step: "step6"
+current_step: "step7.6"
 step_status: "completed"
 ```
 
@@ -17,9 +17,11 @@ step_status: "completed"
 - [x] step3: Author Draft
 - [x] step4: Manager Review
 - [x] step4d: Draft Discussion
-- [x] step5: Reader Feedback
-- [x] step6: Judgment (PASS)
-- [ ] step7: Finalize
+- [x] step5: Reader Feedback (Collect)
+- [x] step6: Judgment
+- [x] step6.5p: Polish (conditional)
+- [x] step7: Finalize
+- [x] step7.6: Plot Update Discussion
 - [ ] step8: Team Shutdown
 
 ## Step 5 Detail
