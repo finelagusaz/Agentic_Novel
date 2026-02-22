@@ -64,23 +64,30 @@ Agentic_Novel/
 
 ## ワークフロー
 
-`/write-episode <番号>` で起動。全ステップ自動実行。
+`/write-episode <番号>` で起動。`SKILL.md` と同じステップ体系（0〜8 + 補助ステップ）で実行される。
 
-1. **初期化 / 再開判定**: progress.md をチェック。新規なら workspace をクリーン、再開なら中断地点から継続
-2. **チーム作成 + コアメンバー一斉スポーン**: 編集・作者・担当者をチームメンバーとしてスポーン
-3. **編集（方針策定）**: current-direction.md を出力
-4. **方針ディスカッション**: 作者・担当者が方針に意見があれば議論（なければ即時合意で進行）
-5. **作者（執筆/改稿）**: current-draft.txt を出力 → **読者3名をバックグラウンドスポーン**
-6. **担当者（レビュー）**: manager-review.md を出力（読者は並行してフィードバック生成中）
-7. **ドラフトディスカッション**: 作者・編集がレビュー所見に対し意見交換（なければ即時合意で進行）
-8. **読者フィードバック回収**: バックグラウンドスポーン済みの読者結果を回収・検証
-9. **判定**: OK かつ 読者平均★≥3.5 → 確定（軽微指摘あれば **6.5P ポリッシュ** 経由）/ 要修正 → Step 6.5D へ（最大3回）/ リビジョン上限到達時は品質ゲート適用（最低基準未達なら中断）
-   - **6.5P ポリッシュ**: PASS だが軽微な共通指摘がある場合、作者に部分修正を依頼
-   - **6.5D リビジョンディスカッション**: 三者で改稿方針を議論 → consolidated-feedback.md を出力 → Step 5 に戻る
-10. **確定・保存**: episodes/ に保存、episode-summaries.md に追記、quality-log.md に拡張記録、archive/ にアーカイブ
-    - **10a. 申し送り事項更新**: editor が story/handover-notes.md を更新（解決済み項目の処理、新規項目の追加）
-11. **プロット更新ディスカッション**: editor と manager が plot-outline.md の更新要否を検討
-12. **チームシャットダウン**: 全メンバーにshutdown_request → TeamDelete
+1. **Step 0 初期化 / 再開判定**: progress.md をチェック。新規なら workspace をクリーン、再開なら中断地点から継続
+2. **Step 1 チーム作成 + コアメンバー一斉スポーン**: 編集・作者・担当者をチームメンバーとしてスポーン
+3. **Step 2 編集（方針策定）**: current-direction.md を出力（`series-tracker.md` を冒頭参照）
+4. **Step 2D 方針ディスカッション**: 作者・担当者が方針に意見があれば議論（なければ即時合意）
+5. **Step 3 作者（執筆/改稿）**: current-draft.txt を出力 → 読者3名をバックグラウンドスポーン
+6. **Step 4 担当者（レビュー）**: manager-review.md を出力（読者は並行してフィードバック生成）
+7. **Step 4D ドラフトディスカッション**: 作者・編集がレビュー所見をすり合わせ（必要時のみ）
+8. **Step 5 読者フィードバック回収**: バックグラウンドスポーン済みの読者結果を回収・検証
+9. **Step 6 判定**: OK かつ 読者平均★≥3.5 なら PASS。要修正なら Step 6.5D（最大3回）
+10. **Step 6.5P ポリッシュ（条件付き）**: PASSだが軽微な共通指摘ありの場合のみ部分修正
+11. **Step 6.5D リビジョンディスカッション（条件付き）**: 三者で改稿方針を議論し Step 3 へ戻る
+12. **Step 7 確定・保存**: episodes/ 保存、episode-summaries/quality-log/series-tracker 更新、archive 退避
+13. **Step 7.5 申し送り事項更新**: editor が `story/handover-notes.md` を更新
+14. **Step 7.6 プロット更新ディスカッション**: editor と manager が `plot-outline.md` 更新要否を検討
+15. **Step 8 チームシャットダウン**: 全メンバーに shutdown_request → TeamDelete
+
+### series-tracker の運用サイクル
+
+1. **参照（Step 2）**: editor が方針策定の冒頭で `story/series-tracker.md` を確認し、警告対応を `current-direction.md` に反映
+2. **検証（Step 4）**: manager が tracker の制約（構造多様性・登場密度）に照らしてドラフトを評価
+3. **更新（Step 7）**: リーダーが確定本文を基に tracker の全テーブルをスライド更新
+4. **引き継ぎ（次話 Step 2）**: 更新済み tracker を次話方針の入力に再利用
 
 ## ルール
 
@@ -101,6 +108,6 @@ Agentic_Novel/
 - `/write-episode N` 実行中、進捗は `workspace/progress.md` に逐次記録される
 - セッション中断後に同じ `/write-episode N` を実行すると、自動的に中断地点から再開する
 - エピソード番号が異なる progress.md が残っている場合はユーザーに確認を求める
-- エピソード確定時（Step 10）に progress.md はアーカイブ後に自動削除される
+- エピソード確定時（Step 7）に progress.md はアーカイブ後に自動削除される
 - チームはセッション間で維持されないため、再開時も Step 2（チーム作成）は必ず実行される
 - 手動で `workspace/progress.md` を削除すると強制的に新規開始できる
