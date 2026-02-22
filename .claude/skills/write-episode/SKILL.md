@@ -204,6 +204,7 @@ SendMessage で **editor** に以下を指示:
 
 以下のファイルを読み込んでください:
 - agents/editor.md（あなたの役割定義）
+- story/series-tracker.md（横断追跡データ — 最初に読み、警告事項を確認してから方針を組み立てること）
 - story/premise.md, story/setting.md, story/characters.md
 - story/plot-outline.md, story/writing-guide.md
 - story/episode-summaries.md
@@ -215,6 +216,17 @@ agents/editor.md の指示に従い、結果を workspace/current-direction.md �
 ```
 
 editor からの完了報告（idle通知）を待ち、`workspace/current-direction.md` について**共通手順: エージェント出力の検証**に従う。
+
+#### 方針固有の構造検証
+
+共通の出力検証に加え、以下の追加検証を行う:
+
+1. `workspace/current-direction.md` を Read で読み、「## アクション配分確認」セクションが存在し、直前2話の区分が具体的に記入されているか確認する
+2. 「## エピソードタイプ・文字数」セクションが存在し、A/B/C の指定があるか確認する
+3. 「## 伏線・布石」セクション内に「グリモワール六行目の進捗」の記載があり、「進展あり/なし」と記入され、「あり」の場合は series-tracker.md の最終進展内容と重複しない具体的な状態変化が記載されているか確認する。また「series-tracker警告への対応」が記入されているか確認する
+4. `story/series-tracker.md` を Read で読み、警告事項（「現在の警告」行）と方針の整合性を確認する。警告が出ているのに方針が対応していない場合（例: 未進展2話以上の要素に言及がない、キャラ登場警告が出ているのに出番が設定されていない）、editor に不足箇所を明示して再出力を依頼する
+
+不備がある場合: editor に不足セクションを明示して再出力を依頼する（共通手順のリトライフローに準じる）
 
 progress.md を更新: step2 を `[x]`、`current_step: "step2"`, `step_status: "completed"`
 
@@ -349,6 +361,7 @@ SendMessage で **manager** に以下を指示:
 - story/premise.md, story/setting.md, story/characters.md
 - story/writing-guide.md, story/episode-summaries.md
 - story/handover-notes.md（申し送り事項、あれば）
+- story/series-tracker.md（横断追跡データ — チェック#12, #17 で参照）
 - workspace/revision-log.md（リビジョン履歴、あれば）
 
 agents/manager.md の指示に従い、ドラフトを評価してください。
@@ -368,6 +381,7 @@ agents/manager.md の指示に従い、ドラフトを評価してください�
 - workspace/current-draft.txt（改稿されたドラフト）
 - workspace/revision-log.md（リビジョン履歴）
 - workspace/consolidated-feedback.md（前回のフィードバック統合）
+- story/series-tracker.md（横断追跡データ — チェック#12, #17 で参照）
 
 agents/manager.md の指示に従い、改稿版を評価してください。
 前回のリビジョン記録と比較し、改善が見られるかも確認してください。
@@ -680,6 +694,12 @@ discussion-log.md に記録を追記し、progress.md を更新: `current_step: 
    - ポリッシュ（Step 6.5P が発動したか: `○` / `-`）
    - 主要指摘（最も頻出した指摘カテゴリを1語で: テンポ/描写/整合性/構成/表現/なし 等）
    - 判定（PASS / PASS_WITH_POLISH / FORCE_PASS）
+
+4a. `story/series-tracker.md` を更新する:
+   - **アクション配分**: テーブルをスライドし、最も古い行を削除して今話の行を追加。「次話の制約」を今話を含む直近3話の配分から再計算して更新する
+   - **キャラクター登場密度**: 今話の列を追加し、最も古い列（5話より前）を削除する。各キャラの「薄い回連続」を再計算する。2話連続△以下のキャラがいれば「現在の警告」を更新する
+   - **伏線・要素の進展追跡**: 今話で進展した要素の「最終進展話」「最終進展の具体的内容」を更新し「未進展話数」を0にリセットする。進展しなかった要素の「未進展話数」を+1する。2話以上未進展の要素があれば「現在の警告」を更新する。新たに追跡すべき要素があれば行を追加する
+   - **表現パターン累積**: 確定したエピソード本文を Grep で走査し、今話の「胸（比喩的使用）」と「ダッシュ（——）」の回数をカウントして更新する。最も古い話のカウントを削除し5話合計を再計算する
 
 → **Step 7.5 を実行**（editor に申し送り事項更新を委任）
 
