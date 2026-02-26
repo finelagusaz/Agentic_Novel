@@ -47,9 +47,6 @@ Step 7 以降の確定処理、ログ更新、チーム終了、完了報告の�
 
 → **Step 7.5 を実行**（editor に申し送り事項更新を委任）
 
-5. workspace/ の全ファイルを `archive/episode-{番号:2桁}/` にコピー（progress.md, discussion-log.md を含む）
-6. workspace/ をクリーン（progress.md はアーカイブ後に自動削除される）
-
 ***
 
 ## 目次
@@ -158,7 +155,10 @@ progress.md を更新: step7.6 を `[x]`、`current_step: "step7.6"`, `step_stat
 
 ### Step 8: チームシャットダウン
 
-全コアチームメイト（editor, author, manager）に `shutdown_request` を送り、全員がシャットダウンしたことを確認してから TeamDelete を実行する。
+1. 全コアチームメイト（editor, author, manager）に `shutdown_request` を送り、全員がシャットダウンしたことを確認してから TeamDelete を実行する。
+2. `workspace/progress.md` を更新: step8 を `[x]`、`current_step: "step8"`, `step_status: "completed"`
+3. workspace/ の全ファイルを `archive/episode-{番号:2桁}/` にコピー（progress.md, discussion-log.md を含む）
+4. workspace/ をクリーン（progress.md はアーカイブ後に自動削除される）
 
 ***
 
